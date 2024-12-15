@@ -99,6 +99,48 @@ class Env:
 
         def reward(self, s, a, s_next):
             reward = 0
+            y, x = np.where(s == 1)
+            y_next, x_next = np.where(s_next == 1)
+            if (
+                    (y_next == self.goal_pos['y'] and x_next == self.goal_pos['x']) and
+                    (y != self.goal_pos['y'] or x != self.goal_pos['x'])
+                ):
+                reward = 10
+            return reward
 
+        def transition_probability(self, s, a, s_next):
+            y, x = np.where(s == 1) ## Get agent pos from s 
+            y_next, x_next = np.where(s_next == 1) ## Get agent pos from next_s
 
+            ## Already reached goal
+            if y == self.goal_pos['y'] and x == self.goal_pos['x']:
+                y_next_temp, x_next_temp = self.goal_pos['y'], self.goal_pos['x']
 
+            ## Upward Movement
+            elif a == 0:
+                y_next_temp, x_next_temp = max(y - 1, self.y_min), x
+
+            ## Right Movement
+            elif a == 1:
+                y_next_temp, x_next_temp = y, min(x + 1, self.x_max)
+
+            ## Downward Movement
+            elif a == 2:
+                y_next_temp, x_next_temp = min(y + 1, self.y_max), x
+
+            ## Left Movement
+            elif a == 3:
+                y_next_temp, x_next_temp = y, max(x - 1, self.x_min)
+                
+            else:
+                assert False, "Invalid action value was fed to step."
+
+            is_correct_transition = (
+                y_next_temp == y_next and
+                x_next_temp == x_next
+            )
+
+            if is_correct_transition:
+                return 1.0
+            else:
+                return 0.0
