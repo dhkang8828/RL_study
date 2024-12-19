@@ -52,17 +52,28 @@ if __name__ == "__main__":
         policy1.append(_policy)
 
     value_vector1 = policy_evaluation(env, policy1)  # [16]
-    table = value_vector1.reshape(4, 4)
+    table = np.zeros([3,4])
+    table[0,0] = value_vector1[0]
+    table[0,3] = value_vector1[1]
+    table[1,:] = value_vector1[2:6]
+    table[2,:] = value_vector1[6:10]
+
+
     print(f"value_vector1: \n{value_vector1}")
     print(f"table: \n{table}")
 
     policy2 = list()
     for s in env.state_space:
-        _policy = np.array([0.1, 0.4, 0.4, 0.1])  # up, right, down, left
+        _policy = np.array([0.25, 0.4, 0.25, 0.1])  # up, right, down, left
         policy2.append(_policy)
 
     value_vector2 = policy_evaluation(env, policy2)
-    table = value_vector2.reshape(4, 4)
+    table = np.zeros([3,4])
+    table[0,0] = value_vector2[0]
+    table[0,3] = value_vector2[1]
+    table[1,:] = value_vector2[2:6]
+    table[2,:] = value_vector2[6:10]
+
     print(f"value_vector2: \n{value_vector2}")
     print(f"table: \n{table}")
 
