@@ -5,16 +5,18 @@ gamma = 0.9
 
 def get_state_index(state_space, state):
     for i_s, s in enumerate(state_space):
+        ## numpy에서 모든 원소가 동일한지 확인 하려면 all() method 사용 
         if (s == state).all():
             return i_s
     assert False, "Couldn't find the state from the state_space"
 
 def calc_return(gamma, rewards):
     n = len(rewards)
-    rewards = np.array(rewards)
+    rewards = np.array(rewards)         ##list to numpy-array
     gammas = gamma * np.ones([n])
     powers = np.arange(n)
 
+    ## [gamma, gamma^2, gamma^3, ... ] 
     power_of_gammas = np.power(gammas, powers)
     ## [r,gamma * r,gamma^2 * r,gamma^3, ...]
     discounted_rewards = rewards * power_of_gammas
@@ -24,7 +26,7 @@ def calc_return(gamma, rewards):
 
 def mc_value_prediction(env, policy):
     value_vector = np.zeros([len(env.state_space)])
-    returns = [{'n':0, 'avg':0} for s in env.state_space]
+    returns = [{'n':0, 'avg':0} for s in env.state_space] ##n: return의 갯수.
 
     ## Repeat Policy Evaluation
     for loop_count in range(10000):
@@ -66,5 +68,20 @@ def mc_value_prediction(env, policy):
             print(f"[{loop_count}] value_vector: \n{value_vector}")
 
     return value_vector
+
+def mc_action_value_prediction(env, policy):
+    actioni_value_matrix = np.zeros([len(env.state_space), len(env.action_space)])
+    returns = [[{'n':0, 'avg':0} for a in env.action_space] for s in env_state_space]
+
+    ## Repeat Policy Evaluation
+    for loop_count in range(10000):
+        episode = {
+            'states': list(),
+            'actions': list(),
+            'rewards': list(),
+        }
+        done = False
+        step_count = 0
+        s = env.reset()
 
 
