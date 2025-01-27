@@ -25,8 +25,10 @@ def calc_return(gamma, rewards):
 
     return g
 
+##es: exploring start
 def mc_control_es(env, policy):
     action_value_matrix = np.zeros([len(env.state_space), len(env.action_space)])
+    ## define dictionary 
     returns = [[{'n':0, 'avg':0} for a in env.action_space] for s in env.state_space]
 
     ## Repeat Policy-Evaluation
@@ -39,6 +41,7 @@ def mc_control_es(env, policy):
 
         done = False
         step_count = 0
+        ## 임의의 지점에서 start
         s = env.exploring_reset()
 
         ## Generate an episode
@@ -58,6 +61,10 @@ def mc_control_es(env, policy):
             step_count += 1
             s = s_next
             
+            '''
+            일정 영역을 반복해서 도는 policy가 생길 수 있다.
+            진짜 말그대로 deadlock!
+            '''
             is_dead_lock = False
             if step_count > 1000:
                 is_dead_lock = True
@@ -95,10 +102,11 @@ def mc_control_es(env, policy):
 
 def mc_control_epsilon_soft(env, policy):
     action_value_matrix = np.zeros([len(env.state_space), len(env.action_space)])
+    ## Dictionary
     returns = [[{'n':0, 'avg':0} for a in env.action_space] for s in env.state_space]
 
     ## Repeat Policy Evaluation
-    for loop_count in range(20000):
+    for loop_count in range(30000):
         episode = {
             'states': list(),
             'actions': list(),
@@ -153,19 +161,20 @@ def mc_control_epsilon_soft(env, policy):
             policy[i_s_t][:] = eps / len(env.action_space)
             policy[i_s_t][a_max] += 1 - eps
 
-
         if (loop_count + 1) % 100 == 0:
             print(f"[{loop_count}] action_value_matrix: \n{action_value_matrix}")
 
     return policy, action_value_matrix
 
 if __name__ == "__main__":
+    np.set_printoptions(formatter={'float':'{: 0.3f}'.format})
     env = Env()
 
     policy = list()
     for i_s, s in enumerate(env.state_space):
         pi = np.array([0.25, 0.25, 0.25, 0.25])
         policy.append(pi)
+    ## list to numpy array
     policy = np.array(policy)   
 
     policy, action_value_matrix = mc_control_es(env, policy)
@@ -179,6 +188,11 @@ if __name__ == "__main__":
     policy_eps_soft, action_value_matrix_eps_soft = mc_control_epsilon_soft(
             env, policy_eps_soft)
 
+    '''
+    value = policy에 대한 action-value의 평균(기대)값
+    따라서, policy와 action-value matrix를 곱한 후에 x축에 대한 평균값을 내면
+    value vector를 얻을 수 있다.
+    '''
     value_vector = np.sum(policy * action_value_matrix, axis=-1)
     value_table = value_vector.reshape(4,4)
 
