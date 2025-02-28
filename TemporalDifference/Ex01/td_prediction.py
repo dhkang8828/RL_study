@@ -88,9 +88,36 @@ if __name__ == "__main__":
 
     env = Env()
     policy1 = list()
+
+    for i_s, s in enumerate(env.state_space):
+        pi = np.array([0.25, 0.25, 0.25, 0.25])
+        policy1.append(pi)
+    policy1 = np.array(policy1)
+
+    value_vector1 = td_value_prediction(env, policy1)
+    value_table1 = value_vector1.reshape(4,4)
+
+    action_value_matrix1 = td_action_value_prediction(env, policy1)
+    value_vector_temp1 = np.sum(policy1 * action_value_matrix1, axis=-1)
+
+    policy2 = list()
+    for i_s, s in enumerate(env.state_space):
+        pi = np.array([0.1, 0.4, 0.4, 0.1])
+        policy2.append(pi)
+    policy2 = np.array(policy2)
+
+    value_vector2 = td_value_prediction(env, policy2)
+    value_table2 = value_vector2.reshape(4,4)
+
+    action_value_matrix2 = td_action_value_prediction(env, policy2)
+    value_vector_temp2 = np.sum(policy2 * action_value_matrix2, axis=-1)
+
+    print(f"value_table1: \n{value_table1}")
+    print(f"action_value_matrix1: \n{action_value_matrix1}")
+    print(f"value_vector1: \n{value_vector1}")
+    print(f"value_vector_temp1: \n{value_vector_temp1}")
     
-
-
-
-
-
+    print(f"value_table2: \n{value_table2}")
+    print(f"action_value_matrix2: \n{action_value_matrix2}")
+    print(f"value_vector2: \n{value_vector2}")
+    print(f"value_vector_temp2: \n{value_vector_temp2}")
