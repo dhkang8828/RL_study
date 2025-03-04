@@ -7,7 +7,7 @@ import numpy as np
 from environment import Env
 
 gamma = 0.9
-alpha = 5e-3
+alpha = 1e-3
 
 def get_state_index(state_space, state):
     for i_s, s in enumerate(state_space):
@@ -50,7 +50,7 @@ def td_action_value_prediction(env, policy):
     action_value_matrix = np.zeros([len(env.state_space), len(env.action_space)])
 
     ## Repeat Policy Evaluation
-    for loop_count in range(10000):
+    for loop_count in range(500000):
         done = False
         step_count = 0
         s = env.reset()
