@@ -125,6 +125,3 @@ if __name__ == "__main__":
     print(f"value_vector2: \n{value_vector2}")
     print(f"value_vector_temp2: \n{value_vector_temp2}")
 
-
-
-
