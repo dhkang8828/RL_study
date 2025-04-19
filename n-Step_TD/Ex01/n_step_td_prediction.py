@@ -108,9 +108,23 @@ def n_step_td_value_prediction(env, policy, n, color):
     plt.plot(0, 0, color=color, label=f"n={n}")
     return value_vector
 
-
-                
-            
-                
-                
-            
+if __name__ == "__main__":
+    env = Env()
+    policy = list()
+    
+    for i_s in range(len(env.state_space)):
+        pi = np.array([0.25, 0.25, 0.25, 0.25])
+        policy.append(pi)
+    policy = np.array(policy)
+    
+    value_vector_1 = n_step_td_value_prediction(env, policy, 1, color='red')
+    value_vector_3 = n_step_td_value_prediction(env, policy, 3, color='green')
+    value_vector_5 = n_step_td_value_prediction(env, policy, 5, color='blue')
+    
+    print(f"n: {1}, value_vecotr1: \n{value_vector_1}")
+    print(f"n: {3}, value_vecotr3: \n{value_vector_3}")
+    print(f"n: {5}, value_vecotr5: \n{value_vector_5}")
+    
+    plt.legend()
+    plt.title("n-step TD prediction")
+    plt.show()
