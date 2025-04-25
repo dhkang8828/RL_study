@@ -56,7 +56,7 @@ def n_step_td_value_prediction(env, policy, n, color):
             s = s_next
             step_count += 1
             
-            if step_count >= n +1:
+            if step_count >= n + 1:
                 ## Remove updated transition
                 trajectory['states'].pop(0)
                 trajectory['actions'].pop(0)
@@ -64,26 +64,27 @@ def n_step_td_value_prediction(env, policy, n, color):
             
             if step_count >= n:
                 assert len(trajectory['rewards']) == n, f"Trajectory length should be n={n} but {len(trajectory['rewards'])}"
-                s_t_sub_n = trajectory['states'][0]
+                s_t_sub_n = trajectory['states'][0]         ## Trajectory의 첫 번째 state
                 i_s_t_sub_n = get_state_index(env.state_space, s_t_sub_n)
-                s_t = trajectory['states'][-1]
+                s_t = trajectory['states'][-1]              ## Trajectory의 마지막(가장 최근) state
                 i_s_t = get_state_index(env.state_space, s_t)
                 
                 alpha = alpha_init / (1 + k_alpha * loop_count)
-                discounted_rewards = calc_return(gamma, trajectory['rewards'])
-                td = discounted_rewards + (gamma ** n) * value_vector[i_s_t] - value_vector[i_s_t_sub_n]
-                value_vector[i_s_t_sub_n] = value_vector[i_s_t_sub_n] + alpha * td
+                discounted_rewards = calc_return(gamma, trajectory['rewards'])      ##Sum[k=1:n](gamma^k * r_k)
+                td = discounted_rewards + (gamma ** n) * value_vector[i_s_t] - value_vector[i_s_t_sub_n]    ##discounted_rewards + gamma^n * V(s_t) - V(s_t_sub_n)
+                value_vector[i_s_t_sub_n] = value_vector[i_s_t_sub_n] + alpha * td  ## Value_vector update
                 
             if done:
                 k_min = min(step_count, n - 1)
-                s_t = trajectory['states'][-1]
+                s_t = trajectory['states'][-1]         ## 마찬가지로 trajectory의 마지막(가장 최근) state
                 i_s_t = get_state_index(env.state_space, s_t)
                 
                 alpha = alpha_init / (1 + k_alpha * loop_count)
                 for i in range(1, k_min + 1):
-                    s_t_sub_i = trajectory['states'][-i]
+                    s_t_sub_i = trajectory['states'][-i-1]
                     i_s_t_sub_i = get_state_index(env.state_space, s_t_sub_i)
-                    discounted_rewards = calc_return(gamma, trajectory['rewards'][-i:])
+                    
+                    discounted_rewards = calc_return(gamma, trajectory['rewards'][-i:])     
                     td = discounted_rewards + (gamma ** k_min) * value_vector[i_s_t] - value_vector[i_s_t_sub_n]
                     value_vector[i_s_t_sub_i] = value_vector[i_s_t_sub_i] + alpha * td
                 value_vector[i_s_t] = 0 ## Set V(s_T) = 0 for the terminal state
@@ -96,7 +97,7 @@ def n_step_td_value_prediction(env, policy, n, color):
         
         ## Add new point
         plot_buffer['x'].append(loop_count)
-        plot_buffer['y'].append(value_vector[0])
+        plot_buffer['y'].append(value_vector[0])    ##Value_vecotr의 첫번째 값
         if loop_count > 0:
             ## Draw a new line
             plt.plot(plot_buffer['x'], plot_buffer['y'], color=color)
@@ -127,4 +128,5 @@ if __name__ == "__main__":
     
     plt.legend()
     plt.title("n-step TD prediction")
-    plt.show()
+    plt.savefig("n_step_td_prediction.jpg")
+    
