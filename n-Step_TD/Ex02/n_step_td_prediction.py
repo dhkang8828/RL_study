@@ -73,5 +73,3 @@ def n_step_td_value_prediction(env, policy, n, color):
                 i_s_t = get_state_index(env.state_space, s_t)
                 
                 alpha = alpha_init / (1 + k_alpha * loop_count) 
-            
-            
