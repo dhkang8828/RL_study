@@ -56,7 +56,7 @@ class Env:
             self.agent_pos['y'] = y_random
             self.agent_pos['x'] = x_random
             self.state = self.set_state(self.agent_pos['y'], self.agent_pos['x'])
-            if not ( self.agent_pos == self.home_pos or self.agent_pos == self.workplace_pos):
+            if not (self.agent_pos == self.home_pos or self.agent_pos == self.workplace_pos):
                 break
         return self.state
 
@@ -117,6 +117,7 @@ class Env:
             y == self.workplace_pos['y'] and 
             x == self.workplace_pos['x']
         )
+                
         is_at_workplace = (
             y_next == self.workplace_pos['y'] and 
             x_next == self.workplace_pos['x']
@@ -126,6 +127,7 @@ class Env:
             y == self.home_pos['y'] and 
             x == self.home_pos['x']
         )
+        
         is_at_home = (
             y_next == self.home_pos['y'] and 
             x_next == self.home_pos['x']
@@ -138,13 +140,14 @@ class Env:
         
         if (was_at_workplace and is_at_workplace):
             reward = 0 
-        elif (not was_at_workplace and is_at_workplace):  # Reached the workplace
+        elif ((not was_at_workplace) and is_at_workplace):  # Reached the workplace
             reward = 5
         
         if (was_at_home and is_at_home):
             reward = 0 
-        if (not was_at_home and is_at_home): # Reached the home
+        elif (not was_at_home and is_at_home): # Reached the home
             reward = 10
+            
         if is_in_park:
             reward = -1.0
             
@@ -231,7 +234,6 @@ if __name__ == "__main__":
         s, a, s_next = transition
         check1 = env.transition_probability(s, a, s_next) == 1.0
         
-
         s_next_ = s_next
         while (s_next_ == s_next).all():
             s_next_ = random.sample(env.state_space, 1)[0]

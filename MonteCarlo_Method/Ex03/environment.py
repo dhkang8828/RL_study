@@ -256,5 +256,3 @@ if __name__ == "__main__":
         if not check:
             embed()
             exit()
-
-
