@@ -64,8 +64,7 @@ def n_step_td_value_prediction(env, policy, n, color):
                 trajectory['rewards'].pop(0)
                 
             if step_count >= n:
-                assert len(trajectory['rewards']) == n, f"Trajectory length should" 
-                + f"be n={n} but {len(trajectory['rewards'])}"
+                assert len(trajectory['rewards']) == n, f"Trajectory length should" + f"be n={n} but {len(trajectory['rewards'])}"
                 
                 s_t_sub_n = trajectory['states'][0]
                 i_s_t_sub_n = get_state_index(env.state_space, s_t_sub_n)
@@ -73,3 +72,66 @@ def n_step_td_value_prediction(env, policy, n, color):
                 i_s_t = get_state_index(env.state_space, s_t)
                 
                 alpha = alpha_init / (1 + k_alpha * loop_count) 
+                discounted_rewards = calc_return(gamma, trajectory['rewards'])
+                td = discounted_rewards + (gamma ** n) * value_vector[i_s_t] - value_vector[i_s_t_sub_n]
+                value_vector[i_s_t_sub_n] = value_vector[i_s_t_sub_n] + alpha * td
+                
+            if done:
+                k_min = min(step_count, n - 1)
+                s_t = trajectory['states'][-1]
+                i_s_t = get_state_index(env.state_space, s_t)
+                
+                alpha = alpha_init / (1 + k_alpha * loop_count)
+                for i in range(1, k_min + 1):
+                    s_t_sub_i = trajectory['states'][-i-1]
+                    i_s_t_sub_i = get_state_index(env.state_space, s_t_sub_i)
+                    
+                    discounted_rewards = calc_return(gamma, trajectory['rewards'][-i:])
+                    td = discounted_rewards + (gamma ** k_min) * value_vector[i_s_t] - value_vector[i_s_t_sub_i]
+                    value_vector[i_s_t_sub_i] = value_vector[i_s_t_sub_i] + alpha * td
+                value_vector[i_s_t] = 0 ## Set V(s_T) = 0
+                
+        ## 
+        if (loop_count + 1) % 100 == 0:
+            print(
+                f"[{loop_count}]  value_vector: \n{value_vector} "
+                + f"\nalpha: {alpha:.4f}"
+            )
+
+        ## Add new point
+        plot_buffer['x'].append(loop_count)
+        plot_buffer['y'].append(value_vector[0])
+        
+        if loop_count > 0:
+            ## Draw a new line
+            plt.plot(plot_buffer['x'], plot_buffer['y'], color=color)
+            ## Remove drawed point
+            plot_buffer['x'].pop(0)
+            plot_buffer['y'].pop(0)
+            
+    ## Add legend for plotting
+    plt.plot(0,0, color=color, label=f"n={n}")
+    
+    return value_vector
+
+if __name__ == "__main__":
+    np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
+    
+    env = Env()
+    policy = list()
+    for i_s, s in enumerate(env.state_space):
+        pi = np.array([0.25, 0.25, 0.25, 0.25])
+        policy.append(pi)
+    policy = np.array(policy)
+    
+    value_vector_1 = n_step_td_value_prediction(env, policy, 1 ,color='red')
+    value_vector_3 = n_step_td_value_prediction(env, policy, 3, color='green')
+    value_vector_5 = n_step_td_value_prediction(env, policy, 5, color='blue')
+    
+    print(f"n: {1}, value_vector_1: \n{value_vector_1}")
+    print(f"n: {3}, value_vector_3: \n{value_vector_3}")
+    print(f"n: {5}, value_vector_5: \n{value_vector_5}")
+    
+    plt.legend()
+    plt.savefig("Ex02_n_step_td_prediction.jpg")
+                
