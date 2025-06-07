@@ -1,11 +1,11 @@
-# RL_study
-Reinforcement Learning
-Cahpter01 - MDP Agent Reinforcement  
+# RL_study  
+
+## Cahpter01 - MDP Agent Reinforcement  
  1. Policy Evaluation 
  2. Policy Iteration  
  3. Value Iteration  
 
-Chapter02 - MDP-Free Agent Reinforcement  
+## Chapter02 - MDP-Free Agent Reinforcement  
  1. MonteCalro Method  
  2. Temporal Difference  
  3. SARSA  
@@ -13,5 +13,5 @@ Chapter02 - MDP-Free Agent Reinforcement
  5. n-step TD  
  6. TD-Lambda  
      
-Chapter03 - Deep Reinforcement Learning
+## Chapter03 - Deep Reinforcement Learning
  1. DQN (Deep Q-Network)
